@@ -1,0 +1,17 @@
+[app-server]
+IP  : 192.168.100.3
+User: lguzamboanga
+Pass: p@ssw0rd#
+
+Portainer-URL : https://192.168.100.3:9000
+Portainer-User: admin
+Portainer-Pass: p@ssw0rd#
+
+Webmin-URL : https://192.168.100.3:10000
+Webmin-User: lguzamboanga
+Webmin-Pass: p@ssw0rd#
+
+[db-server]
+IP  : 192.168.1.74
+User: sa
+Pass: p@ssw0rd#
