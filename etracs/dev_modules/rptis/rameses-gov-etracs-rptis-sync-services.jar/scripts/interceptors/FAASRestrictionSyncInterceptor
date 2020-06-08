@@ -12,8 +12,11 @@ class FAASRestrictionSyncInterceptor
     @Env
     def env
 
+    @Service('RPTMainSyncService')
+    def syncSvc
+
     @Service('FAASRestrictionSyncService')
-    def syncSvc 
+    def restrictionSync 
 
 
     /*---------------------------------------------------------
@@ -21,29 +24,38 @@ class FAASRestrictionSyncInterceptor
     * SCHEDULING SUPPORT
     *
     ---------------------------------------------------------*/
+
     @After(pattern="FAASRestrictionService.approve", index=50000) 
     public void schedulePostRestriction( evt ) {
-        def restriction = evt.result
-        syncSvc.schedulePostRestriction(restriction)
-    }
+        def restriction = evt.result 
+        syncSvc.createDataForSync(getDataForSync(restriction, 'FAASRESTRICTION-POST'))
+    }   
 
     @After(pattern="FAASRestrictionService.removeRestriction", eval="#{args[0].state != 'DRAFT'}", index=50000) 
     public void scheduleDeleteRestriction( evt ) {
         def restriction = evt.args[0]
-        syncSvc.scheduleDeleteRestriction(restriction)
+        syncSvc.createDataForSync(getDataForSync(restriction, 'FAASRESTRICTION-DELETE'))
     }
 
     @After(pattern="FAASRestrictionService.cancel", index=50000) 
     public void scheduleCancelRestriction( evt ) {
         def restriction = evt.result
-        syncSvc.scheduleCancelRestriction(restriction)
+        syncSvc.createDataForSync(getDataForSync(restriction, 'FAASRESTRICTION-CANCEL'))
     }
 
     @After(pattern="FAASRestrictionService.reactivate", index=50000) 
     public void scheduleReactivate( evt ) {
         def restriction = evt.result
-        syncSvc.scheduleReactivate(restriction)
+        syncSvc.createDataForSync(getDataForSync(restriction, 'FAASRESTRICTION-REACTIVATE'))
     }
+
+
+    /* scheduler */
+    @After(pattern="RPTMainSyncService.scheduleSync", eval="#{result.action.matches('FAASRESTRICTION-.*')}", index=50000) 
+    public void scheduleFAASForSync( evt ) {
+        def data = evt.result 
+        restrictionSync.schedule(data)
+    }   
 
 
     /*---------------------------------------------------------
@@ -51,17 +63,27 @@ class FAASRestrictionSyncInterceptor
     * SEND/RECEIVE HANDLERS
     *
     ---------------------------------------------------------*/
-    @After(pattern="RPTMainSyncService.asyncSend", eval="#{result.reftype == 'faasrestriction' && result.action.matches('FAAS-RESTRICTION-.*')}") 
+    @After(pattern="RPTMainSyncService.asyncSend", eval="#{result.action.matches('FAASRESTRICTION-.*')}") 
     public void sendData( evt ) {
         def syncdata = evt.result 
-        syncSvc.send(syncdata)
+        restrictionSync.send(syncdata)
     }   
 
-    @After(pattern="RPTMainSyncService.receive", eval="#{args[0].reftype == 'faasrestriction' && args[0].action.matches('FAAS-RESTRICTION-.*')}") 
+    @After(pattern="RPTMainSyncService.receive", eval="#{args[0].action.matches('FAASRESTRICTION-.*')}") 
     public void receiveData(evt){
         def syncdata = evt.args[0]
-        syncSvc.receive(syncdata)
+        restrictionSync.receive(syncdata)
         evt.result.status = 'OK'
+    }
+
+    def getDataForSync(restriction, action) {
+        def data = [:]
+        data.objid = restriction.objid
+        data.reftype = 'faasrestriction'
+        data.refno = restriction.parent.tdno
+        data.orgid = env.ORGID
+        data.action = action
+        return data
     }
 
 }

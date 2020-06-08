@@ -12,8 +12,11 @@ class CancelledFAASSyncInterceptor
     @Env
     def env
 
+    @Service('RPTMainSyncService')
+    def syncSvc
+
     @Service('CancelledFAASSyncService')
-    def syncSvc 
+    def cancelSync 
 
 
     /*---------------------------------------------------------
@@ -24,20 +27,27 @@ class CancelledFAASSyncInterceptor
     @After(pattern="CancelledFAASService.approve") 
     public void scheduleManualApproved( evt ) {
         def cancelledfaas = evt.result
-        syncSvc.scheduleManualApproved(cancelledfaas)
+        syncSvc.createDataForSync(getDataForSync(cancelledfaas, 'CANCELLEDFAAS-MANUAL-APPROVED'))
     }
 
     @After(pattern="CancelledFAASWorkflowService.signal", eval="#{args[0].state == 'recommender' && args[0].action == 'submit_to_province'}", index=50000) 
     public void scheduleSubmitToProvince( evt ) {
         def cancelledfaas = evt.args[0].data
-        syncSvc.scheduleSubmitToProvince(cancelledfaas)
+        syncSvc.createDataForSync(getDataForSync(cancelledfaas, 'CANCELLEDFAAS-FORAPPROVAL'))
     }
 
     @After(pattern="CancelledFAASService.onlineApprove") 
     public void scheduleOnlineApproved( evt ) {
         def cancelledfaas = evt.result
-        syncSvc.scheduleOnlineApproved(cancelledfaas)
+        syncSvc.createDataForSync(getDataForSync(cancelledfaas, 'CANCELLEDFAAS-ONLINE-APPROVED'))
     }
+
+    /* scheduler */
+    @After(pattern="RPTMainSyncService.scheduleSync", eval="#{result.action.matches('CANCELLEDFAAS-.*')}", index=50000) 
+    public void scheduleForSync( evt ) {
+        def data = evt.result 
+        cancelSync.schedule(data)
+    }   
 
 
 
@@ -46,17 +56,29 @@ class CancelledFAASSyncInterceptor
     * SEND/RECEIVE HANDLERS
     *
     ---------------------------------------------------------*/
-    @After(pattern="RPTMainSyncService.asyncSend", eval="#{result.reftype == 'cancelledfaas' && result.action.matches('CANCELLEDFAAS-.*')}") 
+    @After(pattern="RPTMainSyncService.asyncSend", eval="#{result.action.matches('CANCELLEDFAAS-.*')}") 
     public void sendData( evt ) {
         def syncdata = evt.result 
-        syncSvc.send(syncdata)
+        cancelSync.send(syncdata)
     }   
 
-    @After(pattern="RPTMainSyncService.receive", eval="#{args[0].reftype == 'cancelledfaas' && args[0].action.matches('CANCELLEDFAAS-.*')}") 
+    @After(pattern="RPTMainSyncService.receive", eval="#{args[0].action.matches('CANCELLEDFAAS-.*')}") 
     public void receiveData(evt){
         def syncdata = evt.args[0]
-        syncSvc.receive(syncdata)
+        cancelSync.receive(syncdata)
         evt.result.status = 'OK'
+    }
+
+
+    def getDataForSync(cancelledfaas, action) {
+        def data = [:]
+        data.objid = cancelledfaas.objid
+        data.reftype = 'cancelledfaas'
+        data.refno = cancelledfaas.txnno
+        data.orgid = env.ORGID
+        data.action = action
+        data.info = [:]
+        return data
     }
 
 

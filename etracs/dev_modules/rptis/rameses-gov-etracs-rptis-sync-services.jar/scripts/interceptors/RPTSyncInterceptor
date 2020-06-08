@@ -1,6 +1,7 @@
 import com.rameses.annotations.*
 import com.rameses.common.*
 import com.rameses.services.extended.*
+import com.rameses.util.Base64Cipher
 
 
 /*----------------------------------------------------------------
@@ -89,8 +90,6 @@ class RPTSyncInterceptor
         if (header) {
             syncSvc.send2(syncdata, header)
         }
-        
-        println 'Image Header sent to remote.'        
     }   
 
     @After(pattern="RPTMainSyncService.receive", eval="#{args[0].action.matches('RPT-IMAGE-HEADER')}") 
@@ -98,8 +97,8 @@ class RPTSyncInterceptor
         def syncdata = evt.args[0]
         def header = syncdata.data 
         em_image_header.save(header)
+        em_image_chunk.find([parentid: header.objid]).delete()
         evt.result.status = 'OK'
-        println 'Image Header posted.'
     }
 
     /*----------------------------------------------------------
@@ -112,19 +111,18 @@ class RPTSyncInterceptor
         def syncdata = evt.result 
         def chunk = em_image_chunk.find([objid: syncdata.refid]).first()
         if (chunk) {
-            syncSvc.send2(syncdata, chunk)
+            Base64Cipher cipher = new Base64Cipher()
+            syncSvc.send2(syncdata, cipher.encode(chunk))
         }
-        
-        println 'Image Chunk sent to remote.'        
     }   
 
     @After(pattern="RPTMainSyncService.receive", eval="#{args[0].action.matches('RPT-IMAGE-CHUNK')}") 
     public void receiveImageChunk(evt){
         def syncdata = evt.args[0]
-        def chunk = syncdata.data 
+        Base64Cipher cipher = new Base64Cipher()
+        def chunk = cipher.decode(syncdata.data)
         em_image_chunk.save(chunk)
         evt.result.status = 'OK'
-        println 'Image Chunk posted.'
     }
 
 }
