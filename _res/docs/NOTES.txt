@@ -1,17 +1,38 @@
-[app-server]
-IP  : 192.168.100.3
-User: lguzamboanga
-Pass: p@ssw0rd#
+[Ubuntu Server]
+IP   : 192.168.100.3
+User : 
+Pass : 
 
-Portainer-URL : https://192.168.100.3:9000
-Portainer-User: admin
-Portainer-Pass: p@ssw0rd#
 
-Webmin-URL : https://192.168.100.3:10000
-Webmin-User: lguzamboanga
-Webmin-Pass: p@ssw0rd#
+[DB Server]
+IP   : 192.168.100.3
+User :
+Pass : 
 
-[db-server]
-IP  : 192.168.1.74
-User: sa
-Pass: p@ssw0rd#
+
+[Webmin]
+User : 
+Pass : 
+
+
+[Portainer]
+User : admin
+Pass : p@ssw0rd
+
+
+[Samba Shared Folder]
+User : 
+Pass : p@ssw0rd
+
+
+[Docker Images]
+docker pull nginx:latest
+docker pull ramesesinc/notification-server:1.0
+docker pull ramesesinc/node-download-server:0.0.3
+docker pull ramesesinc/etracs-web:2.5.01.01
+docker pull ramesesinc/gdx-proxy-server:v002
+docker pull ramesesinc/gdx-client:1.03.01
+docker pull ramesesinc/queue-server:255.02.002
+docker pull ramesesinc/mail-server:latest
+docker pull ramesesinc/local-epayment-server:2.5.01.02.04
+docker pull ramesesinc/etracs-server-municipality:2.5.03.02.01
