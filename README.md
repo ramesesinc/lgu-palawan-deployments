@@ -1,1 +1,0 @@
-# lgu-palawan-deployments
