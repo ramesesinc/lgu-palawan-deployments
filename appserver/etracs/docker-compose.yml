@@ -29,3 +29,5 @@ services:
 
       - ../../_custom/output:/apps/server/output
       - ../../_custom/fileserver:/fileserver
+
+      - ./dev-modules/rptis/rameses-gov-etracs-rptis-sync2-services.jar:/servics/modules/rptis/rameses-gov-etracs-rptis-sync2-services.jar
