@@ -30,10 +30,10 @@ services:
       - ../../_custom/output:/apps/server/output
       - ../../_custom/fileserver:/fileserver
 
-      - ./dev-modules/rptis/rameses-gov-etracs-rptis-landtax-report-services.jar:/servics/modules/rptis/rameses-gov-etracs-rptis-landtax-report-services.jar
-      - ./dev-modules/rptis/rameses-gov-etracs-rptis-landtax-services.jar:/servics/modules/rptis/rameses-gov-etracs-rptis-landtax-services.jar
-      - ./dev-modules/rptis/rameses-gov-etracs-rptis-province-landtax-services.jar:/servics/modules/rptis/rameses-gov-etracs-rptis-province-landtax-services.jar
-      - ./dev-modules/rptis/rameses-gov-etracs-rptis-province-services.jar:/servics/modules/rptis/rameses-gov-etracs-rptis-province-services.jar
-      - ./dev-modules/rptis/rameses-gov-etracs-rptis-report-services.jar:/servics/modules/rptis/rameses-gov-etracs-rptis-report-services.jar
-      - ./dev-modules/rptis/rameses-gov-etracs-rptis-services.jar:/servics/modules/rptis/rameses-gov-etracs-rptis-services.jar
-      - ./dev-modules/rptis/rameses-gov-etracs-rptis-sync2-services.jar:/servics/modules/rptis/rameses-gov-etracs-rptis-sync2-services.jar
+      - ./dev-modules/rptis/rameses-gov-etracs-rptis-landtax-report-services.jar:/services/modules/rptis/rameses-gov-etracs-rptis-landtax-report-services.jar
+      - ./dev-modules/rptis/rameses-gov-etracs-rptis-landtax-services.jar:/services/modules/rptis/rameses-gov-etracs-rptis-landtax-services.jar
+      - ./dev-modules/rptis/rameses-gov-etracs-rptis-province-landtax-services.jar:/services/modules/rptis/rameses-gov-etracs-rptis-province-landtax-services.jar
+      - ./dev-modules/rptis/rameses-gov-etracs-rptis-province-services.jar:/services/modules/rptis/rameses-gov-etracs-rptis-province-services.jar
+      - ./dev-modules/rptis/rameses-gov-etracs-rptis-report-services.jar:/services/modules/rptis/rameses-gov-etracs-rptis-report-services.jar
+      - ./dev-modules/rptis/rameses-gov-etracs-rptis-services.jar:/services/modules/rptis/rameses-gov-etracs-rptis-services.jar
+      - ./dev-modules/rptis/rameses-gov-etracs-rptis-sync2-services.jar:/services/modules/rptis/rameses-gov-etracs-rptis-sync2-services.jar
